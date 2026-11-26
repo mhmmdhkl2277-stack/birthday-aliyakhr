@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aliyakhr</title>
+<link rel="icon" type="image/png" href="favicon-a.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500;1,700&family=Poppins:wght@300;400;500;600&family=Gelasio:ital,wght@1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="locked">
+
+<canvas id="fx"></canvas>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-icon">♡</div>
+    <p class="eyebrow">only for Aliya, the others step aside</p>
+    <h2>Enter Your Secret Code</h2>
+    <p class="muted" id="gateHint"></p>
+    <div class="code" id="code">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+      <input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric">
+    </div>
+    <button class="btn" id="unlock">Unlock</button>
+    <p class="error" id="gateErr"></p>
+  </div>
+</div>
+
+
+<!-- VERIFIKASI WAJAH (langkah 2) -->
+<div id="face">
+  <div class="face-card">
+
+    <!-- Panel kamera -->
+    <div id="panelCam">
+      <p class="eyebrow">Langkah 2 dari 2</p>
+      <h2 id="faceTitle">Verifikasi Wajah</h2>
+      <p class="muted" id="faceSub">Posisikan wajahmu di dalam bingkai oval.</p>
+
+      <div class="oval" id="oval">
+        <video id="cam" autoplay playsinline muted></video>
+        <div class="ph-icon" id="ovalPh">
+          <svg viewBox="0 0 100 130" width="90" height="117" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+            <circle cx="50" cy="48" r="20"/><path d="M14 122c0-26 16-40 36-40s36 14 36 40"/>
+          </svg>
+        </div>
+        <div class="scanline"></div>
+        <div class="count" id="count"></div>
+      </div>
+
+      <div class="badge" id="faceBadge"></div>
+      <button class="btn" id="faceStart">Mulai verifikasi</button>
+      <p class="privacy">🔒 Bukan foto pinjol.</p>
+      <p class="inapp" id="inAppNote" hidden>Kalau kamera tidak menyala, buka link ini lewat Chrome atau Safari ya.</p>
+      <button class="linkbtn" id="useFinger">Kamera bermasalah? Pake sidik jari aja</button>
+    </div>
+
+    <!-- Panel sidik jari (cadangan) -->
+    <div id="panelFinger" hidden>
+      <p class="eyebrow">Langkah 2 dari 2</p>
+      <h2 id="fingerTitle">Verifikasi Sidik Jari</h2>
+      <p class="muted" id="fingerSub">Tahan jarimu di lingkaran sampai penuh.</p>
+      <button class="finger" id="fingerBtn" aria-label="tahan untuk verifikasi">
+        <svg viewBox="0 0 120 120" width="150" height="150" fill="none">
+          <circle class="f-track" cx="60" cy="60" r="54"/>
+          <circle class="f-ring" cx="60" cy="60" r="54"/>
+          <g class="f-print" stroke-linecap="round" stroke-width="3">
+            <path d="M38 62c0-14 10-24 22-24s22 10 22 24"/>
+            <path d="M46 78c-2-6-3-10-3-16 0-10 7-17 17-17s17 7 17 17c0 8-2 14-5 20"/>
+            <path d="M54 84c-1-5-2-9-2-14 0-5 3-8 8-8s8 3 8 8c0 6-1 11-3 16"/>
+            <path d="M60 70v10"/>
+          </g>
+        </svg>
+      </button>
+      <p class="privacy" id="fingerNote"></p>
+    </div>
+
+    <!-- Panel polaroid -->
+    <div id="panelPol" hidden>
+      <div class="pol" id="pol">
+        <img id="polImg" alt="">
+        <div class="pol-cap">Nah gitu kan lucuu♡♡</div>
+        <div class="pol-sub" id="polSub"></div>
+        <span class="sp s1">✦</span><span class="sp s2">✦</span><span class="sp s3">✧</span><span class="sp s4">✦</span>
+      </div>
+      <p class="pol-ok" id="polOk"></p>
+      <p class="pol-hint" id="polHint" hidden>Ketuk di mana saja untuk lanjut</p>
+    </div>
+
+  </div>
+  <div id="flash"></div>
+</div>
+
+<button id="musicBtn" aria-label="Buka pemutar musik" aria-expanded="false">♫</button>
+
+<div id="player" aria-hidden="true" role="dialog" aria-label="Pemutar musik">
+  <img id="plCover" alt="" draggable="false">
+  <div class="pl-meta">
+    <div id="plTitle" class="pl-title"></div>
+    <div id="plArtist" class="pl-artist"></div>
+  </div>
+  <input id="plSeek" type="range" min="0" max="1000" value="0" aria-label="Posisi lagu">
+  <div class="pl-times"><span id="plCur">0:00</span><span id="plDur">0:00</span></div>
+  <div class="pl-ctrl">
+    <button id="plPrev" aria-label="Lagu sebelumnya"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12 18 6v12z"/></svg></button>
+    <button id="plPlay" class="pl-main" aria-label="Putar / jeda">
+      <svg class="i-play" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="i-pause" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+    </button>
+    <button id="plNext" aria-label="Lagu berikutnya"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M16 6h2v12h-2zM6 18V6l8.5 6z"/></svg></button>
+  </div>
+</div>
+
+<header class="nav">
+  <span class="brand" id="brand"></span>
+  <nav>
+    <a href="#surface">Surface</a><a href="#story">Chapters</a>
+    <a href="#gallery">Moment</a><a href="#letter">The Letter</a><a href="#wishes">Wishes</a>
+  </nav>
+</header>
+
+<main>
+  <section id="surface" class="hero">
+    <p class="eyebrow" id="heroEyebrow"></p>
+    <h1>Happy Birthday<br><em id="heroName">Aliya Khoerunisa</em></h1>
+    <p class="lead" id="heroText"></p>
+    <div class="row">
+      <a class="btn" href="#story">Start the journey ↓</a>
+      <a class="btn ghost" href="#letter">Jump straight to the letter</a>
+    </div>
+    <p class="scroll">scroll to dive in</p>
+  </section>
+
+  <section id="story">
+    <p class="eyebrow">Beneath the surface, and the deep</p>
+    <h2>Chapters from <em>our story</em></h2>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <section id="gallery">
+    <p class="eyebrow">a collection of Us</p>
+    <h2>Moments we <em>kept</em></h2>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="letter">
+    <p class="eyebrow">words my heart wants u to know</p>
+    <h2>Open when <em>found</em></h2>
+    <div class="paper" id="paper">
+      <h3 class="dear" id="dear"></h3>
+      <div id="letterBody"></div>
+      <p class="sign" id="sign"></p>
+      <button class="btn ghost small" id="replay">↻ Tulis ulang</button>
+    </div>
+  </section>
+
+  <section id="wishes">
+    <p class="eyebrow">a little note for the year ahead.</p>
+    <h2>Little wishes <em>for you</em></h2>
+    <div class="cards" id="cards"></div>
+
+    <div class="finale">
+      <h2>Happy Birthday, <em>Sayangkuu</em></h2>
+      <p class="lead" id="finalText"></p>
+      <div class="candles" id="candles"></div>
+      <p class="wish" id="wishText">Tiup lilinnya satu per satu 🕯️</p>
+      <a class="btn ghost" href="#surface">Float back to the surface ↑</a>
+      <p class="made">Made with love, from Haikal · <span id="year"></span></p>
+    </div>
+  </section>
+</main>
+
+<div id="lightbox"><img alt=""><button aria-label="close">×</button></div>
+<script src="script.js"></script>
+</body>
+</html>
